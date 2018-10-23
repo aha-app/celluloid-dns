@@ -217,10 +217,9 @@ module Celluloid::DNS
 		end
 		
 		def try_udp_server(request, host, port)
-			family = Celluloid::DNS::address_family(host)
-			socket = UDPSocket.new(family)
-			
-			socket.send(request.packet, 0, host, port)
+			socket = Addrinfo.udp(host, port).connect
+
+			socket.send(request.packet, 0)
 			
 			data, (_, remote_port) = socket.recvfrom(UDP_TRUNCATION_SIZE)
 			# Need to check host, otherwise security issue.
